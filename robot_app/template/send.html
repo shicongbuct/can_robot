@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="{% static 'robot_app/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div>发送图片</div>
+    <input type="file" accept="image/*" id="image" value="" />
+    <button id="sendImage">上传图片</button>
+	<script src="{% static 'robot_app/jquery.min.js' %}"></script>
+    <script>
+        var serverUrl = 'http://localhost:8999/robot'
+        $("#sendImage").on("click", function() {
+            var formData = new FormData();
+            formData.append("image_file", $("#image")[0].files[0])
+            $.ajax({
+                url: serverUrl + '/send_pic',
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log(data)
+                }
+            })
+        })
+
+        function getCookie(name)
+        {
+            var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+            if(arr=document.cookie.match(reg))
+                return decodeURI(arr[2]);    //ECMAScript v3 已从标准中删除了 unescape() 函数，并反对使用它，
+            else
+                return null;
+        }
+    </script>
+</body>
+</html>

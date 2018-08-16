@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>login</title>
+    <link href="{% static 'robot_app/bootstrap.min.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <style>
+        body {
+            text-align: center;
+        }
+        p.title {
+            margin-top: 15px;
+        }
+        div.qrcode {
+            text-align: center;
+        }
+        #run {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+	<p class="title">请扫描下面的二维码</p>
+    <div class="qrcode"><img src="data:image/png;base64,{{ qrStorage }}"></div>
+    <button id="run" type="button" class="btn btn-primary">登陆</button>
+    <button id="test" type="button" class="btn btn-primary">test</button>
+</body>
+<script src="{% static 'robot_app/jquery.min.js' %}"></script>
+<script>
+    var serverUrl = 'http://localhost:8999/robot'
+    var successInterval
+    logining = false
+    $("#run").click(function (event) {
+        if (logining) return
+        logining = true
+        var runAjax = $.ajax({
+           url: serverUrl + '/run',
+           type: 'get'
+       })
+        successInterval = setInterval(check_login_status, 2000)
+
+        runAjax.done(function (data) {
+            console.log(data)
+            clearInterval(successInterval)
+            if (data == 'notScan') {
+                $('img').hide()
+                $('#run').hide()
+                $('.title').text('微信机器人登陆失败')
+            }
+            logining = false
+        })
+    });
+
+    function check_login_status() {
+        var check_status = $.ajax({
+            url: serverUrl + '/check_login',
+            type: 'get'
+        })
+        check_status.done(function(data) {
+            console.log(data)
+            if (data == "hasLogin") {
+                $('img').hide()
+                $('#run').hide()
+                $('.title').text('微信机器人已经成功登陆  请关闭此页面')
+                clearInterval(successInterval)
+            }
+        })
+    }
+
+    $("#test").click(function() {
+        $.ajax({
+            url: serverUrl + '/send_pic',
+            type: 'get',
+            success: function (data) {
+                console.log(data)
+            }
+        })
+    })
+</script>
+</html>
