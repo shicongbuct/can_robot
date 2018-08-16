@@ -24,6 +24,8 @@ login_info = {}
 
 def index(request):
     print('start to request')
+    if request.GET.get('pwd') != u'can123':
+        return HttpResponse("密码错误")
     delete_unused_chat(9)
     chat = Itchat.new_instance()
     qrStorage = chat.download_Qrcode()

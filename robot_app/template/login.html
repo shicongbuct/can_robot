@@ -43,6 +43,7 @@
            type: 'get'
        })
         successInterval = setInterval(check_login_status, 2000)
+        //var serverUrl = 'http://39.106.106.129:8999/robot' // for self test server
 
         runAjax.done(function (data) {
             console.log(data)
