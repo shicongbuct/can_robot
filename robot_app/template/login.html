@@ -22,10 +22,13 @@
     </style>
 </head>
 <body>
-	<p class="title">请扫描下面的二维码</p>
+	<p class="title">请扫描下面的二维码，手机确认登陆之后点击蓝色登陆按钮</p>
     <div class="qrcode"><img src="data:image/png;base64,{{ qrStorage }}"></div>
     <button id="run" type="button" class="btn btn-primary">登陆</button>
-    <button id="test" type="button" class="btn btn-primary">test</button>
+    <p class="notify">微信不能识别此二维码截屏后的图片，请使用手机扫描电脑或其他手机</p>
+    <p class="notify" style="margin-bottom: 20px">新申请的微信号无法登陆微信网页版，如遇登陆失败，请先检测所用微信号是否能登陆微信网页版</p>
+    <p class="link" style="display: none">如需发送操作请访问如下链接</p>
+    <a class="link handle" style="display: none" href=""></a>
 </body>
 <script src="{% static 'robot_app/jquery.min.js' %}"></script>
 <script>
@@ -60,23 +63,17 @@
         })
         check_status.done(function(data) {
             console.log(data)
-            if (data == "hasLogin") {
+            if (data.isLogin) {
                 $('img').hide()
                 $('#run').hide()
-                $('.title').text('微信机器人已经成功登陆  请关闭此页面')
+                $('.notify').hide()
+                $('.title').text('微信机器人-->  ' + data.nickName + '  <--已经成功登陆,请关闭此页面')
+                $('.link').show()
+                var url = serverUrl + '/send_page?chat_id=' + data.chat_id;
+                $(".handle").attr('href', url).text(url)
                 clearInterval(successInterval)
             }
         })
     }
-
-    $("#test").click(function() {
-        $.ajax({
-            url: serverUrl + '/send_pic',
-            type: 'get',
-            success: function (data) {
-                console.log(data)
-            }
-        })
-    })
 </script>
 </html>

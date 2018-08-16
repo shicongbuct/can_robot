@@ -6,11 +6,29 @@
 	<title>Document</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <link href="{% static 'robot_app/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        .container {
+            text-align: center;
+            border: 1px solid #000;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div>发送图片</div>
-    <input type="file" accept="image/*" id="image" value="" />
-    <button id="sendImage">上传图片</button>
+{#    <div>发送图片</div>#}
+{#    <input type="file" accept="image/*" id="image" value="" />#}
+{#    <button id="sendImage">上传图片</button>#}
+    <div class="container">
+        <div>群发给所有群聊-文字信息</div>
+        <input type="text" id="mult-msg-input" value="">
+        <button id="mult-msg-btn">群发信息</button>
+    </div>
+    <div class="container">
+        <div>群发给所有群聊-图片信息</div>
+        <input type="file" accept="image/*" id="muli-image-input" value="" />
+        <button id="mult-image-btn">群发图片</button>
+    </div>
 	<script src="{% static 'robot_app/jquery.min.js' %}"></script>
     <script>
         var serverUrl = 'http://localhost:8999/robot'
@@ -34,10 +52,46 @@
         {
             var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
             if(arr=document.cookie.match(reg))
-                return decodeURI(arr[2]);    //ECMAScript v3 已从标准中删除了 unescape() 函数，并反对使用它，
+                return decodeURI(arr[2]);
             else
                 return null;
         }
+
+        $("#mult-msg-btn").click(function () {
+            var text = $("#mult-msg-input").val();
+            if (!text) {
+                alert("输入文字不能为空");
+                return false;
+            }
+            $.ajax({
+                url: serverUrl + '/mult_msg',
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type: 'POST',
+                datatype: 'json',
+                data: {
+                    'text' : text
+                },
+                success: function (data) {
+                    if (data == "ok") alert("发送成功");
+                }
+            })
+        })
+
+        $("#mult-image-btn").click(function () {
+            var formData = new FormData();
+            formData.append("muli_image_file", $("#muli-image-input")[0].files[0])
+            $.ajax({
+                url: serverUrl + '/mult_image',
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data == "ok") alert("发送成功");
+                }
+            })
+        })
     </script>
 </body>
 </html>

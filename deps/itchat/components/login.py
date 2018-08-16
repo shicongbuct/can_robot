@@ -31,6 +31,7 @@ def load_login(core):
     core.logout            = logout
     core.download_Qrcode   = download_Qrcode
     core.loading           = loading
+    core.get_login_info    = get_login_info
 
 def login(self, picDir=None, qrCallback=None, loginCallback=None, exitCallback=None, qrStorage=None):
     self.isLogging = True
@@ -99,6 +100,9 @@ def download_Qrcode(self, enableCmdQR=False, picDir=None, qrCallback=None):
                                 picDir=picDir, qrCallback=qrCallback)
         logger.info('Please scan the QR code to log in.')
     return qrStorage.getvalue()
+
+def get_login_info(self):
+    return self.loginInfo
 
 def push_login(core):
     cookiesDict = core.s.cookies.get_dict()

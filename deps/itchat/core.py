@@ -61,6 +61,8 @@ class Core(object):
         raise NotImplementedError()
     def loading(self, loginCallback=None, picDir=None,exitCallback=None):
         raise NotImplementedError()
+    def get_login_info(self):
+        raise NotImplementedError()
     def get_QRuuid(self):
         ''' get uuid for qrcode
             uuid is the symbol of qrcode

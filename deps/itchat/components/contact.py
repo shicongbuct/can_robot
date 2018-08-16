@@ -314,6 +314,9 @@ def get_chatrooms(self, update=False, contactOnly=False):
             self.get_contact(True)
         return utils.contact_deep_copy(self, self.chatroomList)
 
+'''
+    获取所有的公众号的信息
+'''
 def get_mps(self, update=False):
     if update: self.get_contact(update=True)
     return utils.contact_deep_copy(self, self.mpList)

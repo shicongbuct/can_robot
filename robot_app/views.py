@@ -4,6 +4,7 @@ from deps import itchat as Itchat
 import time
 import base64
 import uuid
+import json
 from robot_app import static_text as st
 import robot_app.models as model
 from .models import Keyword
@@ -19,6 +20,7 @@ from django.http import HttpResponse
     }
 '''
 chat_dict = {}
+login_info = {}
 
 def index(request):
     print('start to request')
@@ -44,8 +46,15 @@ def check_login(request):
     if not chat_obj:
         return HttpResponse("error: not has this chat_id")
     if not chat_obj.get("isLogin"):
-        return HttpResponse("notLogin")
-    return HttpResponse("hasLogin")
+        resp = {"isLogin": False}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    chat = chat_obj.get("chat")
+    login_info = chat.get_login_info()
+    nick_name = login_info.get("User").get("NickName")
+    chat_dict[chat_id]["nick_name"] = nick_name
+    print(nick_name)
+    resp = {"isLogin": True, "nickName": nick_name, "chat_id": chat_id}
+    return HttpResponse(json.dumps(resp), content_type="application/json")
 
 def run(request):
     chat_id = request.COOKIES["can_robot"]
@@ -83,13 +92,28 @@ def send_page(request):
 
 def send_pic(request):
     upload_file = request.FILES.get("image_file")
-    with open("images/" + upload_file.name, "wb") as f:
-        f.write(upload_file.read())
     chat_obj = get_chat_instance(request.COOKIES["can_robot"])
-    if not chat_obj:
-        return HttpResponse('error, not find chat_id')
-    with open("images/" + upload_file.name, 'rb') as f:
-        chat_obj.get("chat").send_image(file_ = f, toUserName = 'filehelper')
+    chat_obj.get("chat").send_image(file_ = upload_file, toUserName = 'filehelper')
+    return HttpResponse("ok")
+
+def mult_msg(request):
+    chat_obj = get_chat_instance(request.COOKIES["can_robot"])
+    chat = chat_obj.get("chat")
+    message = request.POST.get("text")
+    chat_room_list = chat.get_chatrooms()
+    for chat_room in chat_room_list:
+        userName = chat_room.get("UserName")
+        chat.send_msg(msg=message, toUserName= userName)
+    return HttpResponse("ok")
+
+def mult_image(request):
+    chat_obj = get_chat_instance(request.COOKIES["can_robot"])
+    chat = chat_obj.get("chat")
+    upload_file = request.FILES.get("muli_image_file")
+    chat_room_list = chat.get_chatrooms()
+    for chat_room in chat_room_list:
+        userName = chat_room.get("UserName")
+        chat.send_image(file_=upload_file, toUserName=userName)
     return HttpResponse("ok")
 
 def delete_unused_chat(limit_num):
