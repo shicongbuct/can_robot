@@ -33,8 +33,8 @@
     </div>
 	<script src="{% static 'robot_app/jquery.min.js' %}"></script>
     <script>
-        var serverUrl = 'http://localhost:8999/robot'
-        //var serverUrl = 'http://39.106.106.129:8999/robot' // for self test server
+        //var serverUrl = 'http://localhost:8999/robot'
+        var serverUrl = 'http://39.106.106.129:8999/robot' // for self test server
         $("#sendImage").on("click", function() {
             var formData = new FormData();
             formData.append("image_file", $("#image")[0].files[0])
