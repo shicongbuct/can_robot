@@ -1,3 +1,5 @@
-images/
+images/*.jpeg
+images/*.png
+images/*.gif
 logs/
 .idea/
