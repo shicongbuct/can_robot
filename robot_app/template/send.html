@@ -31,10 +31,32 @@
         <input type="file" accept="image/*" id="muli-image-input" value="" />
         <button id="mult-image-btn">群发图片</button>
     </div>
+{#    <div class="container">#}
+{#        <div>放送分享信息</div>#}
+{#        <input type="text" id="send_share_msg_input" value=""/>#}
+{#        <button id="send_share_msg">放送分享信息</button>#}
+{#    </div>#}
 	<script src="{% static 'robot_app/jquery.min.js' %}"></script>
     <script>
+
+
         var serverUrl = 'http://localhost:8999/robot'
         //var serverUrl = 'http://39.106.106.129:8999/robot' // for self test server
+        {#$("#send_share_msg").on("click", function () {#}
+        {#    shareUrl = $("#send_share_msg_input").val();#}
+        {#    $.ajax({#}
+        {#        url: serverUrl + '/send_share_msg',#}
+        {#        headers: { "X-CSRFToken": getCookie("csrftoken") },#}
+        {#        type: 'POST',#}
+        {#        datatype: 'json',#}
+        {#        data: {#}
+        {#            'url' : shareUrl#}
+        {#        },#}
+        {#        success: function (data) {#}
+        {#            console.log(data);#}
+        {#        }#}
+        {#    })#}
+        {#\})#}
         $("#sendImage").on("click", function() {
             var formData = new FormData();
             formData.append("image_file", $("#image")[0].files[0])
