@@ -5,6 +5,7 @@ import time
 import base64
 import uuid
 import json
+import datetime
 from robot_app import static_text as st
 import robot_app.models as model
 from .models import Keyword
@@ -58,6 +59,17 @@ def check_login(request):
     resp = {"isLogin": True, "nickName": nick_name, "chat_id": chat_id}
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
+def formatPrice(msg, price):
+    resText = "非小号的" + msg['Text'].lower() + "价格: " + price.get("price", "未成功获取") + "\n"
+    resText += "涨幅: " + price.get("change") + "\n"
+    resText += "24h成交额: " + price.get("balanceVolume") + "\n"
+    if price.get("rank"):
+        resText += "市值排名： " + price.get("rank") + "\n"
+    if price.get("website"):
+        resText += "更多： http:" + price.get("website") + "\n"
+    resText += "时间： " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return resText
+
 def run(request):
     chat_id = request.COOKIES["can_robot"]
     chat_obj = get_chat_instance(chat_id)
@@ -73,10 +85,10 @@ def run(request):
     def reply_test(msg):
         if msg['Text'].lower() in (u'can', u'币价'):
             price = model.fetchPrice('can', '/currencies/can/')
-            return "can的当前币价为：" + price.get("price", "未成功获取") + "\n24h成交额为：" + price.get("balanceVolume", "未成功获取")
+            return formatPrice(msg, price)
         if st.index_dict.get(msg['Text'].lower()):
             price = model.fetchPrice(msg['Text'].lower(), st.index_dict.get(msg['Text'].lower()))
-            return msg['Text'].lower() + "的当前币价为：" + price.get("price", "未成功获取") + "\n24h成交额为：" + price.get("balanceVolume", "未成功获取")
+            return formatPrice(msg, price)
 
         for item in Keyword.objects.all():
             if item.keyword == msg['Text']:
