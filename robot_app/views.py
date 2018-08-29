@@ -60,13 +60,13 @@ def check_login(request):
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
 def formatPrice(msg, price):
-    resText = "非小号的" + msg['Text'].lower() + "价格: " + price.get("price", "未成功获取") + "\n"
+    resText = msg['Text'].lower() + "价格: " + price.get("price", "未成功获取") + "\n"
     resText += "涨幅: " + price.get("change") + "\n"
     resText += "24h成交额: " + price.get("balanceVolume") + "\n"
     if price.get("rank"):
         resText += "市值排名： " + price.get("rank") + "\n"
     if price.get("website"):
-        resText += "更多： http:" + price.get("website") + "\n"
+        resText += "更多： " + price.get("website") + "\n"
     resText += "时间： " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return resText
 

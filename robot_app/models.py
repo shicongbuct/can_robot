@@ -14,11 +14,13 @@ def fetchPrice(key, value):
     balanceVolume = re.search(r'<div class=tit>24H成交额</div><div class=value>(.*?)<', r.text, re.M | re.I).group(1)
     change = re.search(r'<div class=coinprice>.*?<span class=tags-.*?>(.*?)</span><', r.text, re.M | re.I).group(1)
     rank = re.search(r'<span class=tag-marketcap>(.*?)<', r.text, re.M | re.I)
-    website = re.search(r'网站：</span><span class=value> <a href=(.*?) rel=nofollow target=_blank>网站1</a>', r.text, re.M | re.I)
+    website = re.search(r'网站：</span><span class=value> <a href="(.*?)" rel=nofollow target=_blank>网站1</a>', r.text, re.M | re.I)
     if rank:
         rank = rank.group(1)
     if website:
         website = website.group(1)
+        if not website.startswith("http"):
+            website = "http:" + website
     return {
         "price": price,
         "balanceVolume": balanceVolume,
