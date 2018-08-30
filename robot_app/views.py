@@ -9,6 +9,8 @@ import datetime
 from robot_app import static_text as st
 import robot_app.models as model
 from .models import Keyword
+import logging
+logger = logging.getLogger("django")
 
 # Create your views here.
 from django.http import HttpResponse
@@ -27,11 +29,13 @@ def index(request):
     print('start to request')
     if request.GET.get('pwd') != u'can123':
         return HttpResponse("密码错误")
+    logger.info("remote request received")
     delete_unused_chat(9)
     chat = Itchat.new_instance()
     qrStorage = chat.download_Qrcode()
     chat_id = uuid.uuid1()
     chat_dict[str(chat_id)] = {"chat": chat, "create_Time": time.time(), "isLogin": False}
+    logger.info(str(chat_id) + "  visited index page")
 
     context = {
         'qrStorage': base64.b64encode(qrStorage).decode('utf-8'),
@@ -53,9 +57,12 @@ def check_login(request):
         return HttpResponse(json.dumps(resp), content_type="application/json")
     chat = chat_obj.get("chat")
     login_info = chat.get_login_info()
+    if not login_info:
+        resp = {"isLogin": False}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
     nick_name = login_info.get("User").get("NickName")
     chat_dict[chat_id]["nick_name"] = nick_name
-    print(nick_name)
+    logger.info("detect User: " + nick_name + " has login")
     resp = {"isLogin": True, "nickName": nick_name, "chat_id": chat_id}
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
@@ -121,6 +128,7 @@ def mult_msg(request):
     for chat_room in chat_room_list:
         userName = chat_room.get("UserName")
         chat.send_msg(msg=message, toUserName= userName)
+        logger.info("success send msg: " + message + "  to user: " + userName)
     return HttpResponse("ok")
 
 def mult_image(request):

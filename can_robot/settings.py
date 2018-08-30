@@ -119,3 +119,39 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+import logging
+import django.utils.log
+import logging.handlers
+logBasePath = 'logs'
+if not os.path.exists(os.path.join(os.getcwd(), logBasePath)):
+    os.makedirs(os.path.join(os.getcwd(), logBasePath))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'
+        }
+    },
+    'filters': {},
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/server.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 5,
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
